@@ -1,0 +1,21 @@
+namespace Logger.Core.Exceptions
+{
+    using System;
+    internal class InvalidDateTimeFormatException : Exception
+    {
+        private const string DefaultMessage =
+            "Provided DateTime format not supported! Try registering it using Validator.RegisterNewFormat() method!";
+
+        public InvalidDateTimeFormatException()
+            : base(DefaultMessage)
+        {
+
+        }
+
+        public InvalidDateTimeFormatException(string message)
+            : base(message)
+        {
+
+        }
+    }
+}
