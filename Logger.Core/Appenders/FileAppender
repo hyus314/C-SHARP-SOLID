@@ -1,0 +1,46 @@
+namespace Logger.Core.Appenders
+{
+    using Interfaces;
+    using Models.Interfaces;
+    using Formatting.Layouts.Interfaces;
+    using IO.Interfaces;
+    using Formatting;
+    using Formatting.Interfaces;
+    using Logger.Core.Enums;
+
+    public class FileAppender : IAppender
+    {
+        private readonly IFormatter formatter;
+        private int appendedMessages;
+        private FileAppender()
+        {
+            appendedMessages = 0;
+            formatter = new MessageFormater();
+        }
+        public FileAppender(ILayout layout, ILogFile logFile, ReportLevel reportLevel = 0)
+            :this()
+        {
+            Layout = layout;
+            LogFile = logFile;
+            this.ReportLevel = reportLevel;
+        }
+
+        public ILayout Layout { get; private set; }
+
+        public ILogFile LogFile { get; private set; }
+
+        public ReportLevel ReportLevel { get; private set; }
+
+        public void AppendMessage(IMessage message)
+        {
+            string output = this.formatter.Format(message, this.Layout);
+            this.LogFile.WriteLine(output);
+            File.AppendAllText(this.LogFile.FullPath, output + Environment.NewLine);
+        }
+
+        public void PrintAppenderInfo()
+        {
+            Console.WriteLine($"Appender type: {this.GetType().Name}, Layout type: {this.Layout.GetType().Name}, Report level: {this.ReportLevel.ToString().ToUpper()}, Messages appended: {LogFile.AppendedMessages}, File size: {this.LogFile.Size}");
+        }
+    }
+}
