@@ -1,0 +1,15 @@
+namespace Logger.ConsoleApp.Exceptions
+{
+    using System;
+    public class InvalidLayoutException : Exception
+    {
+        private const string DefaultMessage =
+            "Invalid layout type!";
+
+        public InvalidLayoutException()
+            : base(DefaultMessage)
+        {
+                
+        }
+    }
+}
