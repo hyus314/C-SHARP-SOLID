@@ -1,0 +1,6 @@
+using Logger.ConsoleApp.Core;
+using Logger.ConsoleApp.Core.Interfaces;
+
+
+IEngine engine = new Engine();
+engine.Run();
