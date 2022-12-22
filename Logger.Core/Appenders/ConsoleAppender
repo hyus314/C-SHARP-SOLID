@@ -1,0 +1,42 @@
+namespace Logger.Core.Appenders
+{
+    using Interfaces;
+    using Formatting.Layouts.Interfaces;
+    using Models.Interfaces;
+    using Formatting.Interfaces;
+    using Formatting;
+    using Enums;
+
+    public class ConsoleAppender : IAppender
+    {
+        private IFormatter formatter;
+        private int appendedMessages;
+        public ConsoleAppender()
+        {
+            appendedMessages = 0;
+            this.formatter = new MessageFormater();
+        }
+        public ConsoleAppender(ILayout layout, ReportLevel reportLevel = 0)
+        : this()
+        {
+            this.Layout = layout;
+            this.ReportLevel = reportLevel;
+        }
+
+        public ILayout Layout { get; private set; }
+
+        public ReportLevel ReportLevel { get; private set; }
+
+        public void AppendMessage(IMessage message)
+        {
+            string output = this.formatter.Format(message, this.Layout);
+            Console.WriteLine(output);
+            appendedMessages++;
+        }
+
+        public void PrintAppenderInfo()
+        {
+            Console.WriteLine($"Appender type: {this.GetType().Name}, Layout type: {this.Layout.GetType().Name}, Report level: {this.ReportLevel.ToString().ToUpper()}, Messages appended: {appendedMessages}");
+        }
+    }
+}
