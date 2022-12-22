@@ -1,0 +1,15 @@
+namespace Logger.ConsoleApp.Exceptions
+{
+    using System;
+    public class InvalidAppenderTypeException : Exception
+    {
+        private const string DefaultMessage =
+            "Invalid Appender Type!";
+
+        public InvalidAppenderTypeException()
+            :base(DefaultMessage)
+        {
+
+        }
+    }
+}
