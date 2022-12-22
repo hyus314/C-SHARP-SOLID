@@ -1,0 +1,43 @@
+namespace Logger.Core.Utilities
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+
+    using Interfaces;
+    using Appenders.Interfaces;
+    using Models.Interfaces;
+
+    public class CommandInterpreter : ICommandInterpreter
+    {
+        private readonly ICollection<IAppender> appenders;
+        public CommandInterpreter(ICollection<IAppender> appenders)
+        {
+            this.appenders = appenders;
+        }
+
+        public void FindMessageReportLevelAndAppend(IMessage message)
+        {
+            Assembly? assembly = AppDomain.CurrentDomain.GetAssemblies()
+                .FirstOrDefault(a => a.FullName.StartsWith("Logger.Core"));
+
+            Type? loggerType = assembly?
+                .GetTypes()
+                .FirstOrDefault(t => t.Name == "Logger");
+
+            MethodInfo[] methods = loggerType
+                .GetMethods(BindingFlags.Instance | BindingFlags.Public)
+                 .ToArray();
+
+            MethodInfo? targetMethod = methods
+                .FirstOrDefault(m => m.Name == message.ReportLevel.ToString());
+            
+            object? loggerInstance = Activator
+                .CreateInstance(loggerType, appenders);
+
+            object? method = targetMethod
+                .Invoke(loggerInstance, new object[] { message.DateTime, message.MessageText});
+        }
+    }
+}
