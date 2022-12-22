@@ -1,0 +1,15 @@
+namespace Logger.ConsoleApp.Exceptions
+{
+    using System;
+    public class InvalidTokensLengthException : Exception
+    {
+        private const string DefaultMessage =
+            "Invalid tokens length! Command's length can only consist of 2 or 3 string elements.";
+
+        public InvalidTokensLengthException()
+        : base(DefaultMessage)
+        {
+
+        }
+    }
+}
