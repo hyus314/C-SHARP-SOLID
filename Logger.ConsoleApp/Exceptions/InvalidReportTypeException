@@ -1,0 +1,15 @@
+namespace Logger.ConsoleApp.Exceptions
+{
+    using System;
+    public class InvalidReportTypeException : Exception
+    {
+        private const string DefaultMessage =
+            "Invalid report level!";
+
+        public InvalidReportTypeException()
+        : base(DefaultMessage)
+        {
+
+        }
+    }
+}
