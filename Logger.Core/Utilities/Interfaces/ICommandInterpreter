@@ -1,0 +1,10 @@
+namespace Logger.Core.Utilities.Interfaces
+{
+    using Logger.Core.Models.Interfaces;
+ 
+
+    public interface ICommandInterpreter
+    {
+        void FindMessageReportLevelAndAppend(IMessage message);
+    }
+}
