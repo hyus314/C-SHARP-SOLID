@@ -1,0 +1,46 @@
+namespace Logger.ConsoleApp.Factories
+{
+    using Logger.ConsoleApp.Exceptions;
+    using Logger.ConsoleApp.Factories.Interfaces;
+    using Logger.Core.Appenders;
+    using Logger.Core.Appenders.Interfaces;
+    using Logger.Core.Enums;
+    using Logger.Core.Formatting.Layouts.Interfaces;
+    using Logger.Core.IO;
+    using Logger.Core.IO.Interfaces;
+    public class AppenderFactory : IAppenderFactory
+    {
+        public IAppender CreateAppender(string type, ILayout layout, ReportLevel reportLevel )
+        {
+            IAppender appender;
+            if (type == "ConsoleAppender")
+            {
+                appender = CreateConsoleAppender(layout, reportLevel);
+            }
+            else if (type == "FileAppender")
+            {
+                appender = CreateFileAppender(layout, reportLevel);
+            }
+            else
+            {
+                throw new InvalidAppenderTypeException();
+            }
+
+            return appender;
+        }
+        private IAppender CreateConsoleAppender(ILayout layout, ReportLevel reportLevel)
+        {
+            IAppender consoleAppender;
+            consoleAppender = new ConsoleAppender(layout, reportLevel);
+            return consoleAppender;
+        }
+        private IAppender CreateFileAppender(ILayout layout, ReportLevel reportLevel)
+        {
+            IAppender fileAppender;
+            ILogFile defaultLogFile = new LogFile("defaultLog.txt", "../../../Logs");
+            fileAppender = new FileAppender(layout, defaultLogFile, reportLevel);
+
+            return fileAppender;
+        }
+    }
+}
