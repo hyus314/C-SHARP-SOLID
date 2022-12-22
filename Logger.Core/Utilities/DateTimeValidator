@@ -1,0 +1,23 @@
+namespace Logger.Core.Utilities
+{
+    using System.Globalization;
+
+    public static class DateTimeValidator
+    {
+
+        public static bool IsDateTimeValid(string dateTime)
+        {
+            bool isFormatValid = false;
+            DateTimeStyles style = new DateTimeStyles();
+            IFormatProvider formatProvider = CultureInfo.InvariantCulture.DateTimeFormat;
+            bool isCurrFormat = DateTime.TryParse(dateTime, formatProvider, style, out DateTime result);
+            if (isCurrFormat)
+            {
+                isFormatValid = true;
+            }
+
+            return isFormatValid;
+        }
+
+    }
+}
