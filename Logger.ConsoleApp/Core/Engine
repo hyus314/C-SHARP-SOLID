@@ -1,0 +1,121 @@
+namespace Logger.ConsoleApp.Core
+{
+    using System;
+
+    using Logger.ConsoleApp.Core.Interfaces;
+    using Logger.ConsoleApp.Exceptions;
+    using Logger.ConsoleApp.Factories;
+    using Logger.ConsoleApp.Factories.Interfaces;
+    using Logger.Core.Appenders.Interfaces;
+    using Logger.Core.Enums;
+    using Logger.Core.Formatting.Layouts.Interfaces;
+    using Logger.Core.Models;
+    using Logger.Core.Models.Interfaces;
+    using Logger.Core.Utilities;
+    using Logger.Core.Utilities.Interfaces;
+
+    public class Engine : IEngine
+    {
+        private readonly ICollection<IAppender> appenders;
+        private readonly ICommandInterpreter commandInterpreter;
+        private readonly ILayoutFactory layoutFactory;
+        private readonly IAppenderFactory appenderFactory;
+        public Engine()
+        {
+            this.appenders = new HashSet<IAppender>();
+            this.layoutFactory = new LayoutFactory();
+            this.appenderFactory = new AppenderFactory();
+            this.commandInterpreter = new CommandInterpreter(appenders);
+        }
+        public void Run()
+        {
+            int n = int.Parse(Console.ReadLine());
+            for (int i = 0; i < n; i++)
+            {
+                try
+                {
+                    CollectAppenders();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+
+
+            string? cmd;
+            while ((cmd = Console.ReadLine()) != "END")
+            {
+                try
+                {
+                    LoggerOperations(cmd);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.Message);
+                }
+            }
+            Console.WriteLine("Logger info");
+            foreach (var appender in appenders)
+            {
+                appender.PrintAppenderInfo();
+            }
+        }
+
+        private void LoggerOperations(string? cmd)
+        {
+            IMessage message;
+            string[] messageArgs = cmd
+                .Split("|", StringSplitOptions.RemoveEmptyEntries);
+
+            ReportLevel reportLevel;
+            bool reportLevelParse = Enum.TryParse(messageArgs[0], true, out reportLevel);
+            if (reportLevelParse)
+            {
+                message = new Message(messageArgs[2], messageArgs[1], reportLevel);
+            }
+            else
+            {
+                throw new InvalidReportTypeException();
+            }
+
+            commandInterpreter.FindMessageReportLevelAndAppend(message);
+        }
+
+        private void CollectAppenders()
+        {
+            string[] tokens = Console.ReadLine()
+                               .Split(" ", StringSplitOptions.RemoveEmptyEntries);
+
+            string appenderType = tokens[0];
+            string layoutType = tokens[1];
+
+            ILayout layout = layoutFactory.CreateLayout(layoutType);
+            IAppender appender;
+            if (tokens.Length == 2)
+            {
+                ReportLevel reportLevel = 0;
+                appender = appenderFactory.CreateAppender(appenderType, layout, reportLevel);
+            }
+            else if (tokens.Length == 3)
+            {
+                ReportLevel reportLevel;
+                bool reportLevelParse = Enum.TryParse(tokens[2], true, out reportLevel);
+                if (reportLevelParse)
+                {
+                    appender = appenderFactory.CreateAppender(appenderType, layout, reportLevel);
+                }
+                else
+                {
+                    throw new InvalidReportTypeException();
+                }
+            }
+            else
+            {
+                throw new InvalidTokensLengthException();
+            }
+
+            appenders.Add(appender);
+        }
+    }
+}
